@@ -16,6 +16,7 @@ struct SysData {
     short acc[3] = {0, 0, 0}; // x,y,z轴加速度计原始数据
     short gyro_kalman[3] = {0, 0, 0}; // x,y,z轴陀螺仪卡尔曼滤波数据
     short gyro_lowpass[3] = {0, 0, 0}; // x,y,z轴陀螺仪低通滤波数据
+
 };
 
 extern SysData data;
@@ -98,6 +99,11 @@ namespace Control {
     };
     #define left_Motor Dirver::PWM::Channel_1
     #define right_Motor Dirver::PWM::Channel_2
+    class LR_Speed_Control_PID : public PID {
+    public:
+        LR_Speed_Control_PID(float p, float i, float d) : PID(p, i, d, 1) {}
+
+    };
     class Speed_Control_PID : public PID {
     public:
         Speed_Control_PID(float p, float i, float d) : PID(p, i, d, 1) {}
@@ -124,9 +130,9 @@ namespace Control {
             return output;
         }
     };
-    class Balance_Control_PID : public PID {
+    class Upright_Control_PID : public PID {
     public:
-        Balance_Control_PID(float p, float i, float d) : PID(p, i, d, 1) {}
+        Upright_Control_PID(float p, float i, float d) : PID(p, i, d, 1) {}
         float update(float target, float current) {
             error = target - current;
             integral += error;
@@ -161,11 +167,11 @@ namespace Control {
         };
         void control(float target);
     };
-    class Balance_Control : public Balance_Control_PID{
+    class Upright_Control : public Upright_Control_PID{
         System::Dirver::PWM::Channel Chx;
     public:
-        Balance_Control(System::Dirver::PWM::Channel Chx,float p, float i, float d,float max_output ,float min_output,float max_integral) :
-        Balance_Control_PID(p,i,d),Chx(Chx) {
+        Upright_Control(System::Dirver::PWM::Channel Chx,float p, float i, float d,float max_output ,float min_output,float max_integral) :
+        Upright_Control_PID(p,i,d),Chx(Chx) {
             this->max_output = max_output;
             this->min_output = min_output;
             this->max_integral = max_integral;

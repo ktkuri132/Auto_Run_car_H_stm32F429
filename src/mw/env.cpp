@@ -10,8 +10,8 @@
 
 extern Cmd_PointerTypeDef Cmd;
 
-extern Control::Balance_Control left_Control;
-extern Control::Balance_Control right_Control;
+extern Control::Upright_Control left_Control;
+extern Control::Upright_Control right_Control;
 extern Control::Speed_Control Speed_Control;
 
 extern "C" {

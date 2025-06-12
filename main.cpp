@@ -33,8 +33,8 @@ Dirver::GPIO _tb6612(GPIOC, GPIO_Pin_1);
 /**
  * 远离OLED侧为右轮,靠近侧为左轮,左轮转得快一些
  */
-Control::Balance_Control left_Control(left_Motor,600,10.1,-1.2,9000,500,1000);
-Control::Balance_Control right_Control(right_Motor,600,10.1,-1.2,9000,500,1000);
+Control::Upright_Control left_Control(left_Motor,600,10.1,-1.2,9000,500,1000);
+Control::Upright_Control right_Control(right_Motor,600,10.1,-1.2,9000,500,1000);
 Control::Speed_Control Speed_Control(left_Motor, -2.9f, -0.02f, 0.0f, 20, 14);
 Control::Filter::KalmanFilter gy_kalman(0.01f, 100.0f, 0.0f); // 创建卡尔曼滤波器实例
 Control::Filter::LowPassFilter gy_lowpass(0.3f); // 创建低通滤波器实例
@@ -50,7 +50,7 @@ extern DeviceFamily default_log;
 
 void Debug_log(void *pvParameters) {
     for (;;) {
-        uart4.printf("%d,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%.2f\n",
+        uart4.printf("%d,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%.2f,%.2f\n",
             leftAB.speed - rightAB.speed,
             left_Control.derivative_value,
             left_Control.output,
@@ -58,7 +58,8 @@ void Debug_log(void *pvParameters) {
             Speed_Control.output,
             data.gyro[data.y],
             left_Control.integral_value,
-            data.pitch
+            data.pitch,
+            data.acc[data.y]
             );
         vTaskDelay(pdMS_TO_TICKS(20));
     }
@@ -81,17 +82,13 @@ void Main_Thread(void *pvParameters) {
         }
         mpu_dmp_get_data(&data.pitch, &data.roll, &data.yaw);
         mpu_get_gyro_reg(data.gyro,NULL);
-        // mpu_get_accel_reg(data.acc,NULL);
+        mpu_get_accel_reg(data.acc,NULL);
     }
 }
 
 void TIM3_IRQHandler_CallBack(void *pvParameters) {
     for (;;) {
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-        // /*输入卡尔曼滤波*/
-        // data.gyro_kalman[data.y] = gy_kalman.Update((data.gyro[data.y]+15)*1.0f);
-        // /*输入低通滤波*/
-        // data.gyro_lowpass[data.y] = gy_lowpass.update(data.gyro_kalman[data.y]);
         Speed_Control.control(0);
         Control::Filter::LowPassFilter lowpass(0.3f);
         Control::Filter::KalmanFilter kalman(0.01f, 10.0f, 0.0f);
