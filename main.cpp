@@ -33,9 +33,10 @@ Dirver::GPIO _tb6612(GPIOC, GPIO_Pin_1);
 /**
  * 远离OLED侧为右轮,靠近侧为左轮,左轮转得快一些
  */
+
 Control::Upright_Control left_Control(left_Motor,600,10.1,-1.2,9000,500,1000);
 Control::Upright_Control right_Control(right_Motor,600,10.1,-1.2,9000,500,1000);
-Control::Speed_Control Speed_Control(left_Motor, -2.9f, -0.02f, 0.0f, 20, 14);
+Control::Speed_Control Speed_Control(left_Motor, -5.36f, -0.11f, 0.0f, 1000, 140);
 Control::Filter::KalmanFilter gy_kalman(0.01f, 100.0f, 0.0f); // 创建卡尔曼滤波器实例
 Control::Filter::LowPassFilter gy_lowpass(0.3f); // 创建低通滤波器实例
 

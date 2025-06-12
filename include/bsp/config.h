@@ -20,6 +20,12 @@ namespace System {
         uint32_t start = DWT->CYCCNT;
         while ((DWT->CYCCNT - start) < cycles);
     }
+    inline void sleep_ms(uint32_t ms) {
+        //延时函数
+        uint32_t cycles = ms * (SystemCoreClock / 1000);
+        uint32_t start = DWT->CYCCNT;
+        while ((DWT->CYCCNT - start) < cycles);
+    }
     namespace Dirver {
         class GPIO {
         public:

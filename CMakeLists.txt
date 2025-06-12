@@ -17,7 +17,7 @@ set(SIZE arm-none-eabi-size)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 # 项目名称
-project(mtc C CXX ASM)
+project(AutoRunCarH C CXX ASM)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
 
@@ -37,8 +37,6 @@ elseif("${Target_Board}" STREQUAL "STM32H7xx")
 elseif("${Target_Board}" STREQUAL "")
     message(FATAL_ERROR "Unknown target board")
 endif ()
-# 若不支持硬件浮点,则使用软件浮点
-#add_compile_options(-mfloat-abi=soft)
 
 # 指定芯片型号的相关编译选项
 if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "cortex-m4" OR 
@@ -77,10 +75,6 @@ else ()
 endif ()
 
 
-# 添加子目录Cmake文件
-
-
-
 # 添加链接脚本
 file(GLOB_RECURSE LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/*.ld)
 
@@ -88,8 +82,6 @@ file(GLOB_RECURSE LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/*.ld)
 add_link_options(-Wl,-gc-sections,--print-memory-usage,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map)
 add_link_options(-T ${LINKER_SCRIPT})
 
-# 添加宏定义
-# add_definitions(-DDEBUG -DUSE_HAL_DRIVER -DSTM32F429xx)
 
 file(
     GLOB_RECURSE SOURCE_FILES
@@ -99,15 +91,6 @@ file(
 # 生成可执行文件
 add_executable(${PROJECT_NAME}.elf main.cpp ${SOURCE_FILES} ${LINKER_SCRIPT})
 
-
-
-# 忽略warning
-# target_compile_options(${PROJECT_NAME}.elf PRIVATE -W)
-
-# 将可执行文件链接项目其他库
-#target_link_libraries(${PROJECT_NAME}.elf ${Board_Name}lib bsplib projectlib)
-
-#set(ROOT_DIR ${CMAKE_SOURCE_DIR})
 
 include_directories(${CMAKE_SOURCE_DIR})
 target_include_directories(${PROJECT_NAME}.elf PUBLIC
@@ -126,23 +109,6 @@ add_definitions(
         -DSTM32F429_439xx
         -DUSE_STDPERIPH_DRIVER
 )
-
-# 为main.c添加头文件路径
-#target_include_directories(${PROJECT_NAME}.elf PRIVATE core/${Board_Name})
-#if("${Target_Board}" STREQUAL "STM32F1xx")
-#target_include_directories(${PROJECT_NAME}.elf PRIVATE core/stm32f1/STM32F1xx_StdPeriph_Driver/inc)
-#elseif ("${Target_Board}" STREQUAL "STM32F4xx")
-#    target_include_directories(${PROJECT_NAME}.elf PRIVATE core/stm32f4/STM32F4xx_StdPeriph_Driver/inc)
-#elseif("${Target_Board}" STREQUAL "STM32H7xx")
-#    target_include_directories(${PROJECT_NAME}.elf PRIVATE core/stm32h7/STM32H7xx_HAL_Driver/inc)
-#elseif("${Target_Board}" STREQUAL "")
-#    message(FATAL_ERROR "Unknown target board")
-#endif ()
-#target_include_directories(${PROJECT_NAME}.elf PRIVATE bsp)
-#target_include_directories(${PROJECT_NAME}.elf PRIVATE bsp/arch/${Board_Name})
-#target_include_directories(${PROJECT_NAME}.elf PRIVATE bsp/hardware)
-#target_include_directories(${PROJECT_NAME}.elf PRIVATE include)
-
 
 
 # 定义其他类型的可执行文件
