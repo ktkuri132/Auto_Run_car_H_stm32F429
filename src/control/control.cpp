@@ -32,6 +32,10 @@ void Speed_Control::control(float target) {
     update(target, left_current_speed - right_current_speed);
 }
 
+void Turn_Control::control(float target,float current) {
+    update(target,current);
+
+}
 /**
  * @brief 小车直立环控制函数
  * @param target 目标角度,传入速度环输入
@@ -56,5 +60,9 @@ void Upright_Control::control(float target,float current) {
         }
     }
     uint32_t tmp = (uint32_t)tmp_out;
-    Motor.setDutyCycle(Chx,tmp + (uint32_t)min_output);
+    if (data.pitch > 40 || data.pitch < -40) {
+        Motor.setDutyCycle(Chx,9000);
+    } else {
+        Motor.setDutyCycle(Chx,tmp + (uint32_t)min_output);
+    }
 }

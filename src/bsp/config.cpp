@@ -6,6 +6,7 @@
 #include "stm32f4xx_gpio.h"
 #include "../../include/bsp/config.h"
 #include <cassert>
+#include <stdarg.h>
 using namespace System;
 
 Dirver::GPIO::GPIO(GPIO_TypeDef *port, uint16_t pin, GPIOMode_TypeDef mode ,

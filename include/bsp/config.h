@@ -9,18 +9,15 @@
 #include "spl/stm32f4xx.h"
 #include <cstddef>
 #include <cstdio>
-// #include <iosfwd>
-// #include <streambuf>
-#include <stdarg.h>
 namespace System {
     inline void Init();
-    inline void sleep(uint32_t us) {
+    inline void sleep(const uint32_t us) {
         //延时函数
         uint32_t cycles = us * (SystemCoreClock / 1000000);
         uint32_t start = DWT->CYCCNT;
         while ((DWT->CYCCNT - start) < cycles);
     }
-    inline void sleep_ms(uint32_t ms) {
+    inline void sleep_ms(const uint32_t ms) {
         //延时函数
         uint32_t cycles = ms * (SystemCoreClock / 1000);
         uint32_t start = DWT->CYCCNT;
@@ -42,21 +39,21 @@ namespace System {
                  GPIOSpeed_TypeDef speed = GPIO_High_Speed, GPIOOType_TypeDef otype = GPIO_OType_PP,
                  GPIOPuPd_TypeDef pupd = GPIO_PuPd_NOPULL, uint8_t af = NULL, uint8_t pinSource = NULL);
 
-            ~GPIO() {
+            virtual ~GPIO() {
                 GPIO_DeInit(port);
             }
 
             virtual void init(GPIOMode_TypeDef mode);
 
-            void setPin(uint16_t pin) {
+            void setPin(const uint16_t pin) const {
                 GPIO_SetBits(port, pin);
             }
 
-            void resetPin(uint16_t pin) {
+            void resetPin(const uint16_t pin) const {
                 GPIO_ResetBits(port, pin);
             }
 
-            uint8_t readPin(uint16_t pin) {
+            [[nodiscard]] uint8_t readPin(const uint16_t pin) const {
                 return GPIO_ReadInputDataBit(port, pin);
             }
 
@@ -70,7 +67,7 @@ namespace System {
 
             UART(USART_TypeDef *usart, GPIO_TypeDef *port, uint16_t pin, uint32_t baudRate);
 
-            ~UART() {
+            ~UART() override {
                 USART_DeInit(usart);
             }
 
@@ -85,15 +82,17 @@ namespace System {
             uint16_t readData();
             static void sendByte(USART_TypeDef *usart, uint8_t byte) {
                 while (USART_GetFlagStatus(usart, USART_FLAG_TXE) == RESET);
-                usart->DR = (byte & (uint16_t)0x01FF);
+                usart->DR = (byte & static_cast<uint16_t>(0x01FF));
             }
-            static uint16_t readData(USART_TypeDef *usart) {
-                (uint16_t)(usart->DR & (uint16_t)0x01FF);
+            static uint16_t readData(const USART_TypeDef *usart) {
+                return static_cast<uint16_t>(usart->DR & static_cast<uint16_t>(0x01FF));
             }
         };
 
         class TIM {
         public:
+            virtual ~TIM() = default;
+
             TIM_TypeDef *tim;
             uint32_t period; // ARR
             uint16_t prescaler; // PSC
@@ -154,13 +153,13 @@ namespace System {
                     resetPin(IIC_SDA_Pin); // 设置SDA线为低电平
                 }
             }
-            virtual void Soft_SDA_IN(void) {//SDA线设置为输入
+            virtual void Soft_SDA_IN() {//SDA线设置为输入
                 init(GPIO_Mode_IN); // 设置SDA线为浮空输入
             }
-            virtual void Soft_SDA_OUT(void) {//SDA线设置为输出
+            virtual void Soft_SDA_OUT() {//SDA线设置为输出
                 init(GPIO_Mode_OUT); // 设置SDA线为开漏输出
             }
-            virtual uint8_t Soft_READ_SDA(void) {//读取SDA线状态
+            virtual uint8_t Soft_READ_SDA() {//读取SDA线状态
                 return readPin(IIC_SDA_Pin); // 读取SDA线状态
             }
         public:
@@ -211,23 +210,23 @@ namespace System {
                 setPin(pin);
             }
 
-            void on() {
+            void on() const {
                 setPin(pin);
             }
 
-            void on(uint16_t _pin) {
+            void on(const uint16_t _pin) const {
                 setPin(_pin);
             }
 
-            void off() {
+            void off() const {
                 resetPin(pin);
             }
 
-            void off(uint16_t _pin) {
+            void off(const uint16_t _pin) const {
                 resetPin(_pin);
             }
 
-            void toggle() {
+            void toggle() const {
                 if (readPin(pin)) {
                     resetPin(pin);
                 } else {
@@ -235,7 +234,7 @@ namespace System {
                 }
             }
 
-            void toggle(uint16_t _pin) {
+            void toggle(const uint16_t _pin) const {
                 if (readPin(_pin)) {
                     resetPin(_pin);
                 } else {

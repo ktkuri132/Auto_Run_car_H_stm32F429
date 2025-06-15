@@ -892,8 +892,6 @@ void OLED_ShowBinNum(int16_t X, int16_t Y, uint32_t Number, uint8_t Length, uint
  */
 void OLED_ShowFloatNum(int16_t X, int16_t Y, double Number, uint8_t IntLength, uint8_t FraLength,
                        uint8_t FontSize) {
-    uint32_t PowNum, IntNum, FraNum;
-
     if (Number >= 0)  // 数字大于等于0
     {
         OLED_ShowChar(X, Y, '+', FontSize);  // 显示+号
@@ -904,10 +902,10 @@ void OLED_ShowFloatNum(int16_t X, int16_t Y, double Number, uint8_t IntLength, u
     }
 
     /*提取整数部分和小数部分*/
-    IntNum = Number;  // 直接赋值给整型变量，提取整数
+    uint32_t IntNum = Number;  // 直接赋值给整型变量，提取整数
     Number -= IntNum;  // 将Number的整数减掉，防止之后将小数乘到整数时因数过大造成错误
-    PowNum = OLED_Pow(10, FraLength);  // 根据指定小数的位数，确定乘数
-    FraNum = round(Number * PowNum);  // 将小数乘到整数，同时四舍五入，避免显示误差
+    uint32_t PowNum = OLED_Pow(10, FraLength);  // 根据指定小数的位数，确定乘数
+    uint32_t FraNum = round(Number * PowNum);  // 将小数乘到整数，同时四舍五入，避免显示误差
     IntNum += FraNum / PowNum;        // 若四舍五入造成了进位，则需要再加给整数
 
     /*显示整数部分*/
