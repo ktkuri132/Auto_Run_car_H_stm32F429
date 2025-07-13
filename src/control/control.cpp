@@ -12,7 +12,7 @@ extern SysData data;
 extern Dirver::PWM Motor;
 extern Dirver::Encoding leftAB;
 extern Dirver::Encoding rightAB;
-
+extern Turn_Control Turn_Ctrl;
 
 
 
@@ -34,7 +34,6 @@ void Speed_Control::control(float target) {
 
 void Turn_Control::control(float target,float current) {
     update(target,current);
-
 }
 /**
  * @brief 小车直立环控制函数
@@ -43,8 +42,11 @@ void Turn_Control::control(float target,float current) {
  */
 void Upright_Control::control(float target,float current) {
     update(target,current);
+    // Turn_Ctrl.control(data.yaw_init,data.yaw_offset); // 调用转向控制
     float tmp_out = output; // 获取输出值
+
     if (Chx == left_Motor) {
+        // tmp_out += Turn_Ctrl.output;
         if (tmp_out >= 0) {
             LeftForward;
         } else {
@@ -52,6 +54,7 @@ void Upright_Control::control(float target,float current) {
             LeftBackward;
         }
     } else if (Chx == right_Motor) {
+        // tmp_out -= Turn_Ctrl.output;
         if (tmp_out >= 0) {
             RightForward;
         } else {
@@ -65,4 +68,5 @@ void Upright_Control::control(float target,float current) {
     } else {
         Motor.setDutyCycle(Chx,tmp + (uint32_t)min_output);
     }
+
 }

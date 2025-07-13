@@ -6,11 +6,9 @@
 #include "bsp/config.h"
 #include "rtos/FreeRTOS.h"
 #include "rtos/task.h"
-#include "hw/OLED.h"
 #include "hw/inv_mpu.h"
 #include <shell.h>
 #include "Serial.h"
-#include "tb6612.h"
 #include "control.h"
 #include <env.h>
 #include <iosfwd>
@@ -33,10 +31,10 @@ Dirver::GPIO _tb6612(GPIOC, GPIO_Pin_1);
 /**
  * 远离OLED侧为右轮,靠近侧为左轮,左轮转得快一些
  */
-Control::Upright_Control left_Control(left_Motor,700,10.1,-1.2,9000,500,1000);
-Control::Upright_Control right_Control(right_Motor,700,10.1,-1.2,9000,500,1000);
-Control::Speed_Control Speed_Control(left_Motor, -5.36f, -0.11f, 0.0f, 1000, 140);
-Control::Turn_Control Turn_Control(-0.09f, -0.0f, 0.0f, 100, 50); // 创建转向控制实例
+Control::Upright_Control left_Ctrl(left_Motor,700,10.1,-1.2,9000,500,1000);
+Control::Upright_Control right_Ctrl(right_Motor,700,10.1,-1.2,9000,500,1000);
+Control::Speed_Control Speed_Ctrl(left_Motor, -5.36f, -0.11f, 0.0f, 1000, 140);
+Control::Turn_Control Turn_Ctrl(-0.09f, -0.0f, 0.0f, 100, 50); // 创建转向控制实例
 Control::Filter::KalmanFilter gy_kalman(0.01f, 100.0f, 0.0f); // 创建卡尔曼滤波器实例
 Control::Filter::LowPassFilter gy_lowpass(0.3f); // 创建低通滤波器实例
 
@@ -49,12 +47,15 @@ extern EnvVar MyEnvVar[20];
 extern DeviceFamily default_log;
 
 
+
 void Debug_log(void *pvParameters) {
     for (;;) {
-        uart4.printf("%.2f,%.2f,%.2f\n",
-            data.yaw_offset,
-            data.yaw_init,
-            Turn_Control.output
+        printf("%.2f,%.2f,%.2f,%d,%d\n",
+            left_Ctrl.output,
+            right_Ctrl.output,
+            Speed_Ctrl.output,
+            Motor.tim->CCR1,
+            Motor.tim->CCR2
             );
         vTaskDelay(pdMS_TO_TICKS(20));
     }
@@ -83,21 +84,24 @@ void Debug_log(void *pvParameters) {
     }
 }
 
+
 [[noreturn]] void TIM3_IRQHandler_CallBack(void *pvParameters) {
+
     for (;;) {
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-        Speed_Control.control(0);
+        Speed_Ctrl.control(0);
         Control::Filter::LowPassFilter lowpass(0.3f);
         Control::Filter::KalmanFilter kalman(0.01f, 10.0f, 0.0f);
-        // Turn_Control.control(data.yaw_init,data.yaw_offset);
-        left_Control.control(
+        left_Ctrl.control(
             kalman.Update(
             lowpass.update(
-                Speed_Control.output + Turn_Control.output)),data.pitch);
-        right_Control.control(
+                Speed_Ctrl.output)
+                    ),data.pitch);
+        right_Ctrl.control(
             kalman.Update(
             lowpass.update(
-                Speed_Control.output + Turn_Control.output)),data.pitch);
+                Speed_Ctrl.output)
+                    ),data.pitch);
     }
 }
 
@@ -130,13 +134,11 @@ TaskHandle_t USART1_CallBackHandle;
 [[noreturn]] int main() {
     Init();
     Dirver::TIM tim3(TIM3, (10 * 1000), 27);
-    xTaskCreate(Debug_log, "Debug_log", 1000, NULL, 3, NULL);
-    xTaskCreate(Main_Thread, "Main_Thread", 1400, NULL, 3, NULL);
-    xTaskCreate(TIM3_IRQHandler_CallBack, "TIM3_IRQHandler", 1000, NULL, 5, &TIM3_CallBackHandle);
-    xTaskCreate(USART1_IRQHandler_CallBack, "USART1_IRQHandler", 1000, MyEnvVar, 4, &USART1_CallBackHandle);
+    xTaskCreate(Debug_log, "Debug_log", 1000, nullptr, 3, nullptr);
+    xTaskCreate(Main_Thread, "Main_Thread", 1400, nullptr, 3, nullptr);
+    xTaskCreate(TIM3_IRQHandler_CallBack, "TIM3_IRQHandler", 1000, nullptr, 5, &TIM3_CallBackHandle);
     vTaskStartScheduler();
     for (;;) {}
-    return 0;
 }
 
 
@@ -175,3 +177,4 @@ void vApplicationIdleHook(void) {
     // 可以在这里执行低功耗模式或其他空闲任务
     __WFI(); // 进入等待中断模式
 }
+

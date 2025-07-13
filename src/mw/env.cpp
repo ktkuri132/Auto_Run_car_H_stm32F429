@@ -10,26 +10,26 @@
 
 extern Cmd_PointerTypeDef Cmd;
 
-extern Control::Upright_Control left_Control;
-extern Control::Upright_Control right_Control;
-extern Control::Speed_Control Speed_Control;
+extern Control::Upright_Control left_Ctrl;
+extern Control::Upright_Control right_Ctrl;
+extern Control::Speed_Control Speed_Ctrl;
 
 extern "C" {
 void _ls(int argc, void *argv[]) {
     if (argc == 2) {
         std::string cmd = static_cast<char *>(argv[0]);
         if (cmd == "pidu") {
-            printf("\nleft: p:%.2f  i:%.2f d:%.2f\n", left_Control.p, left_Control.i, left_Control.d);
-            printf("right: p:%.2f  i:%.2f d:%.2f\n", right_Control.p, right_Control.i, right_Control.d);
+            printf("\nleft: p:%.2f  i:%.2f d:%.2f\n", left_Ctrl.p, left_Ctrl.i, left_Ctrl.d);
+            printf("right: p:%.2f  i:%.2f d:%.2f\n", right_Ctrl.p, right_Ctrl.i, right_Ctrl.d);
         } else if (cmd == "pids") {
-            printf("\nspeed: p:%.2f  i:%.2f d:%.2f\n", Speed_Control.p, Speed_Control.i, Speed_Control.d);
+            printf("\nspeed: p:%.2f  i:%.2f d:%.2f\n", Speed_Ctrl.p, Speed_Ctrl.i, Speed_Ctrl.d);
         } else if (cmd == "pid") {
-            printf("\nspeed: p:%.2f  i:%.2f d:%.2f\n", Speed_Control.p, Speed_Control.i, Speed_Control.d);
-            printf("sleft: p:%.2f  i:%.2f d:%.2f\n", left_Control.p, left_Control.i, left_Control.d);
-            printf("sright: p:%.2f  i:%.2f d:%.2f\n", right_Control.p, right_Control.i, right_Control.d);
+            printf("\nspeed: p:%.2f  i:%.2f d:%.2f\n", Speed_Ctrl.p, Speed_Ctrl.i, Speed_Ctrl.d);
+            printf("sleft: p:%.2f  i:%.2f d:%.2f\n", left_Ctrl.p, left_Ctrl.i, left_Ctrl.d);
+            printf("sright: p:%.2f  i:%.2f d:%.2f\n", right_Ctrl.p, right_Ctrl.i, right_Ctrl.d);
         } else if (cmd == "die") {
-            printf("left: die:%.2f\n", left_Control.min_output);
-            printf("right: die:%.2f\n", right_Control.min_output);
+            printf("left: die:%.2f\n", left_Ctrl.min_output);
+            printf("right: die:%.2f\n", right_Ctrl.min_output);
         } else {
             printf(Error("arguments error:ls command need pid,die,test,reset"));
         }
@@ -47,31 +47,31 @@ void _pids(int argc, void *argv[]) {
         float arg_value_f = std::stof(data); // 将字符串转换为浮点数
         if (lr == "l") {
             if (pid == "p") {
-                Speed_Control.p = arg_value_f;
+                Speed_Ctrl.p = arg_value_f;
             } else if (pid == "i") {
-                Speed_Control.i = arg_value_f;
+                Speed_Ctrl.i = arg_value_f;
             } else if (pid == "d") {
-                Speed_Control.d = arg_value_f;
+                Speed_Ctrl.d = arg_value_f;
             } else {
                 printf(Error("arguments error:pid command need p,i,d"));
             }
         } else if (lr == "r") {
             if (pid == "p") {
-                Speed_Control.p = arg_value_f;
+                Speed_Ctrl.p = arg_value_f;
             } else if (pid == "i") {
-                Speed_Control.i = arg_value_f;
+                Speed_Ctrl.i = arg_value_f;
             } else if (pid == "d") {
-                Speed_Control.d = arg_value_f;
+                Speed_Ctrl.d = arg_value_f;
             } else {
                 printf(Error("arguments error:pid command need p,i,d"));
             }
         } else if (lr == "all") {
             if (pid == "p") {
-                Speed_Control.p = arg_value_f;
+                Speed_Ctrl.p = arg_value_f;
             } else if (pid == "i") {
-                Speed_Control.i = arg_value_f;
+                Speed_Ctrl.i = arg_value_f;
             } else if (pid == "d") {
-                Speed_Control.d = arg_value_f;
+                Speed_Ctrl.d = arg_value_f;
             } else {
                 printf(Error("arguments error:pid command need p,i,d"));
             }
@@ -79,7 +79,7 @@ void _pids(int argc, void *argv[]) {
             printf(Error("arguments error:pid command need l,r,all"));
 
         }
-        printf("\nleft: p:%.2f  i:%.2f d:%.2f\n", Speed_Control.p, Speed_Control.i, Speed_Control.d);
+        printf("\nleft: p:%.2f  i:%.2f d:%.2f\n", Speed_Ctrl.p, Speed_Ctrl.i, Speed_Ctrl.d);
     } else {
         printf(Error("arguments error:pid command need 4 arguments"));
     }
@@ -93,34 +93,34 @@ void _pidu(int argc, void *argv[]) {
         float arg_value_f = std::stof(data); // 将字符串转换为浮点数
         if (lr == "l") {
             if (pid == "p") {
-                left_Control.p = arg_value_f;
+                left_Ctrl.p = arg_value_f;
             } else if (pid == "i") {
-                left_Control.i = arg_value_f;
+                left_Ctrl.i = arg_value_f;
             } else if (pid == "d") {
-                left_Control.d = arg_value_f;
+                left_Ctrl.d = arg_value_f;
             } else {
                 printf(Error("arguments error:pid command need p,i,d"));
             }
         } else if (lr == "r") {
             if (pid == "p") {
-                right_Control.p = arg_value_f;
+                right_Ctrl.p = arg_value_f;
             } else if (pid == "i") {
-                right_Control.i = arg_value_f;
+                right_Ctrl.i = arg_value_f;
             } else if (pid == "d") {
-                right_Control.d = arg_value_f;
+                right_Ctrl.d = arg_value_f;
             } else {
                 printf(Error("arguments error:pid command need p,i,d"));
             }
         } else if (lr == "all") {
             if (pid == "p") {
-                left_Control.p = arg_value_f;
-                right_Control.p = arg_value_f;
+                left_Ctrl.p = arg_value_f;
+                right_Ctrl.p = arg_value_f;
             } else if (pid == "i") {
-                left_Control.i = arg_value_f;
-                right_Control.i = arg_value_f;
+                left_Ctrl.i = arg_value_f;
+                right_Ctrl.i = arg_value_f;
             } else if (pid == "d") {
-                left_Control.d = arg_value_f;
-                right_Control.d = arg_value_f;
+                left_Ctrl.d = arg_value_f;
+                right_Ctrl.d = arg_value_f;
             } else {
                 printf(Error("arguments error:pid command need p,i,d"));
             }
@@ -128,8 +128,8 @@ void _pidu(int argc, void *argv[]) {
             printf(Error("arguments error:pid command need l,r,all"));
 
         }
-        printf("left: p:%.2f  i:%.2f d:%.2f\n", left_Control.p, left_Control.i, left_Control.d);
-        printf("right: p:%.2f  i:%.2f d:%.2f\n", right_Control.p, right_Control.i, right_Control.d);
+        printf("left: p:%.2f  i:%.2f d:%.2f\n", left_Ctrl.p, left_Ctrl.i, left_Ctrl.d);
+        printf("right: p:%.2f  i:%.2f d:%.2f\n", right_Ctrl.p, right_Ctrl.i, right_Ctrl.d);
     } else {
         printf(Error("arguments error:pid command need 4 arguments"));
     }
@@ -141,17 +141,17 @@ void _die(int argc, void *argv[]) {
         std::string data = static_cast<char *>(argv[1]);
         float arg_value_f = std::stof(data); // 将字符串转换为浮点数
         if (lr == "l") {
-            left_Control.min_output = arg_value_f;
+            left_Ctrl.min_output = arg_value_f;
         } else if (lr == "r") {
-            right_Control.min_output = arg_value_f;
+            right_Ctrl.min_output = arg_value_f;
         } else if (lr == "all") {
-            left_Control.min_output = arg_value_f;
-            right_Control.min_output = arg_value_f;
+            left_Ctrl.min_output = arg_value_f;
+            right_Ctrl.min_output = arg_value_f;
         } else {
             printf(Error("arguments error:die command need l,r,all"));
         }
-        printf("die left: %.2f\n", left_Control.min_output);
-        printf("die right: %.2f\n", right_Control.min_output);
+        printf("die left: %.2f\n", left_Ctrl.min_output);
+        printf("die right: %.2f\n", right_Ctrl.min_output);
     }
 }
 

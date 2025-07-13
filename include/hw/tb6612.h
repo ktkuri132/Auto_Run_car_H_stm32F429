@@ -25,12 +25,12 @@ extern Dirver::GPIO _tb6612;
 //#define MotorRight PWMB
 
 //方向控制
-#define RightForward do{tb6612.setPin(AIN_1); _tb6612.resetPin(AIN_2);}while(0)
-#define RightBackward do{tb6612.resetPin(AIN_1); _tb6612.setPin(AIN_2);}while(0)
-#define LeftForward do{tb6612.resetPin(BIN_1); tb6612.setPin(BIN_2);}while(0)
-#define LeftBackward do{tb6612.setPin(BIN_1); tb6612.resetPin(BIN_2);}while(0)
-#define AllForward do{LeftForward;RightForward;}while(0)
-#define AllBackward do{LeftBackward;RightBackward;}while(0)
-#define AllStop do{tb6612.resetPin(AIN_1); _tb6612.resetPin(AIN_2);tb6612.resetPin(BIN_1);tb6612.resetPin(BIN_2);}while(0)
+#define RightForward    do{tb6612.setPin(AIN_1); _tb6612.resetPin(AIN_2);}while(0)
+#define RightBackward   do{tb6612.resetPin(AIN_1); _tb6612.setPin(AIN_2);}while(0)
+#define LeftForward     do{tb6612.resetPin(BIN_1); tb6612.setPin(BIN_2);}while(0)
+#define LeftBackward    do{tb6612.setPin(BIN_1); tb6612.resetPin(BIN_2);}while(0)
+#define AllForward      do{LeftForward;RightForward;}while(0)
+#define AllBackward     do{LeftBackward;RightBackward;}while(0)
+#define AllStop         do{tb6612.resetPin(AIN_1); _tb6612.resetPin(AIN_2);tb6612.resetPin(BIN_1);tb6612.resetPin(BIN_2);}while(0)
 
 #endif //TB6612_H
