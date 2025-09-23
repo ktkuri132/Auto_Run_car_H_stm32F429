@@ -178,9 +178,9 @@ A: 确认波特率设置，检查串口引脚连接，验证Shell协议格式
 
 ## 联系方式
 
-- 作者: 34575
+- 作者: Kilo
 - 创建日期: 2025-06-02
-- 项目地址: [GitHub链接]
+- 项目地址: [[GitHub链接](https://github.com/ktkuri132/Auto_Run_car_H_stm32F429.git)]
 
 ---
 
